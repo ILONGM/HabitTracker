@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.tracker {
+    display: grid;
+    grid-template-columns: repeat(20, 20px); /* 20 squares per row */
+    grid-gap: 5px;
+}
+
+.day {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.day.completed {
+    background-color: green;
+}
+
+.day:hover {
+    background-color: lightgrey;
+}
