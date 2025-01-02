@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2025 Habit Tracker</title>
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
@@ -12,6 +13,12 @@
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+<!--  importe le SDK firestore-->
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+<!--  importe le sdk authentification de google -->
+  import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,6 +34,12 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+
+<!--  initialize authentification & Google auth & firestore-->
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  const db = getFirestore(app);
+
 </script>
 
 
@@ -44,12 +57,6 @@ const signIn = async () => {
 </script>
 
 
-
-
-
-
-
-
     <h1>2025 Sport Habit Tracker</h1>
 
     <div class="tracker" id="tracker"></div>
@@ -65,9 +72,6 @@ const signIn = async () => {
             const doc = await db.collection('habitTrackers').doc(userId).get();
             return doc.exists ? doc.data().completedDays : [];
         };
-
-
-
 
         // Dynamically generate 365 days
         const tracker = document.getElementById("tracker");
@@ -90,35 +94,52 @@ const signIn = async () => {
         }
 
         // Store completed days in local storage
-        const markDay = (day) => {
+
+        const markDay = async (day, userId, completedDays) => {
             const today = new Date();
             const startDay = new Date("2025-01-01");
             const currentDayIndex = Math.ceil((today - startDay) / (1000 * 60 * 60 * 24)) + 1;
 
-            if (day !== currentDayIndex) return; // Only allow today's square to be clicked
+            if (day !== currentDayIndex) return; // Empêche de marquer d'autres jours que celui d'aujourd'hui
 
-            const completedDays = JSON.parse(localStorage.getItem('completedDays')) || [];
             if (!completedDays.includes(day)) {
-                completedDays.push(day);
-                localStorage.setItem('completedDays', JSON.stringify(completedDays));
-                document.getElementById(`day-${day}`).classList.add('completed');
+                completedDays.push(day); // Ajoute le jour à la liste des jours complétés
+                await saveCompletedDays(userId, completedDays); // Sauvegarde dans Firestore
+                document.getElementById(`day-${day}`).classList.add('completed'); // Marque le jour comme complété visuellement
             }
         };
 
-        // Highlight completed days on load
-        window.onload = () => {
-            const completedDays = JSON.parse(localStorage.getItem('completedDays')) || [];
+        const initializeTracker = async (userId) => {
+            const completedDays = await getCompletedDays(userId); // Récupère les jours complétés depuis Firestore
 
-            // Ensure January 1 is completed by default
-            if (!completedDays.includes(1)) {
-                completedDays.push(1);
-                localStorage.setItem('completedDays', JSON.stringify(completedDays));
+            const tracker = document.getElementById("tracker");
+            const startDate = new Date("2025-01-01");
+
+            for (let i = 1; i <= 365; i++) {
+                const day = document.createElement("div");
+                day.className = "day";
+                day.id = `day-${i}`;
+
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i - 1);
+                day.innerText = `${date.getDate()}/${date.getMonth() + 1}`;
+
+                if (completedDays.includes(i)) {
+                    day.classList.add('completed'); // Si le jour est dans les jours complétés, l'afficher comme complété
+                }
+
+                day.onclick = () => markDay(i, userId, completedDays);
+
+                tracker.appendChild(day);
             }
-
-            completedDays.forEach(day => {
-                document.getElementById(`day-${day}`).classList.add('completed');
-            });
         };
+
+        window.onload = async () => {
+            const userId = await signIn(); // Authentifie l'utilisateur
+            initializeTracker(userId);  // Initialise le tracker avec les jours complétés
+        };
+
+
     </script>
 </body>
 </html>
