@@ -7,15 +7,68 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!--// Set up connection with my firestore database-->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7gS8sXxXN_ttimfCmVWVXMRhuIyk3FwU",
+    authDomain: "habit-tracker-2025.firebaseapp.com",
+    projectId: "habit-tracker-2025",
+    storageBucket: "habit-tracker-2025.firebasestorage.app",
+    messagingSenderId: "602488381703",
+    appId: "1:602488381703:web:92dc52cd14856b1c8f65a2"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+
+
+<!-- connecter l'utilisateur via Google :-->
+<script>
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+const signIn = async () => {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    console.log(`Signed in as: ${user.displayName}`);
+    return user.uid;
+};
+</script>
+
+
+
+
+
+
+
+
     <h1>2025 Sport Habit Tracker</h1>
-    <nav>
-    <a href="Code Habit Tracker.html">Go to code tracker</a>
-    </nav>
-    <nav>
-    <a href="Network Habit Tracker.html">Go to network tracker</a>
-    </nav>
+
     <div class="tracker" id="tracker"></div>
     <script>
+
+<!--        fonction pour sauvegarder les jours complétés-->
+        const saveCompletedDays = async (userId, completedDays) => {
+            await db.collection('habitTrackers').doc(userId).set({ completedDays });
+        };
+
+<!--fonction pour récuppérer les jours complétés-->
+        const getCompletedDays = async (userId) => {
+            const doc = await db.collection('habitTrackers').doc(userId).get();
+            return doc.exists ? doc.data().completedDays : [];
+        };
+
+
+
+
         // Dynamically generate 365 days
         const tracker = document.getElementById("tracker");
         const startDate = new Date("2025-01-01");
