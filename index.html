@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    <title>2025 Habit Tracker</title>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Habit Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,19 +12,31 @@
     <script>
         // Dynamically generate 365 days
         const tracker = document.getElementById("tracker");
+        const startDate = new Date("2025-01-01");
 
         for (let i = 1; i <= 365; i++) {
             const day = document.createElement("div");
             day.className = "day";
             day.id = `day-${i}`;
+
+            // Calculate the date for each square
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i - 1);
+
+            // Add date as text inside the square
+            day.innerText = `${date.getDate()}/${date.getMonth() + 1}`;
             day.onclick = () => markDay(i);
+
             tracker.appendChild(day);
         }
 
         // Store completed days in local storage
         const markDay = (day) => {
-            const today = new Date().getDate(); // You can replace with custom logic
-            if (day !== today) return; // Only allow today's square to be clicked
+            const today = new Date();
+            const startDay = new Date("2025-01-01");
+            const currentDayIndex = Math.ceil((today - startDay) / (1000 * 60 * 60 * 24)) + 1;
+
+            if (day !== currentDayIndex) return; // Only allow today's square to be clicked
 
             const completedDays = JSON.parse(localStorage.getItem('completedDays')) || [];
             if (!completedDays.includes(day)) {
