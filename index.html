@@ -78,19 +78,22 @@
 
 
 
-
-        // Store completed days in local storage
-        const markDay = async (day, userId, completedDays) => {
+// fonction qui permet de marquer comme complété un jour
+            const markDay = async (day, userId, completedDays) => {
             const today = new Date();
             const startDay = new Date("2025-01-01");
-            const currentDayIndex = Math.ceil((today - startDay) / (1000 * 60 * 60 * 24)) + 1;
 
-            if (day !== currentDayIndex) return; // Empêche de marquer d'autres jours que celui d'aujourd'hui
+            //calcul l'écart en millisecondes entre now et la date de départ et en déduit le #du jour
+            const currentDayIndex = Math.ceil((today - startDay) / (1000 * 60 * 60 * 24)) ;
+            console.log("Nous sommes le :"+ currentDayIndex + "jour de l'année")
+
+           // Empêche de marquer d'autres jours que celui d'aujourd'hui
+            if (day !== currentDayIndex) return;
 
             if (!completedDays.includes(day)) {
-                completedDays.push(day); // Ajoute le jour à la liste des jours complétés
-                await saveCompletedDays(userId, completedDays); // Sauvegarde dans Firestore
-                document.getElementById(`day-${day}`).classList.add('completed'); // Marque le jour comme complété visuellement
+                completedDays.push(day);
+                await saveCompletedDays(userId, completedDays);
+                document.getElementById(`day-${day}`).classList.add('completed');
             }
         };
 
