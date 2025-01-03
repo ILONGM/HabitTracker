@@ -77,25 +77,7 @@
     };
 
 
-    // Dynamically generate 365 days
-    const tracker = document.getElementById("tracker");
-    const startDate = new Date("2025-01-01");
 
-    for (let i = 1; i <= 365; i++) {
-        const day = document.createElement("div");
-        day.className = "day";
-        day.id = `day-${i}`;
-
-        // Calculate the date for each square
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i - 1);
-
-        // Add date as text inside the square
-        day.innerText = `${date.getDate()}/${date.getMonth() + 1}`;
-        day.onclick = () => markDay(i);
-
-        tracker.appendChild(day);
-        }
 
         // Store completed days in local storage
         const markDay = async (day, userId, completedDays) => {
@@ -112,35 +94,33 @@
             }
         };
 
+// fonction initialize tracker
+//génère 365 jours
+
         const initializeTracker = async (userId) => {
-            const completedDays = await getCompletedDays(userId); // Récupère les jours complétés depuis Firestore
+        const completedDays = userId ? await getCompletedDays(userId) : [];
+        const tracker = document.getElementById("tracker");
+        const startDate = new Date("2025-01-01");
 
-            const tracker = document.getElementById("tracker");
-            const startDate = new Date("2025-01-01");
-
-            for (let i = 1; i <= 365; i++) {
-                const day = document.createElement("div");
-                day.className = "day";
-                day.id = `day-${i}`;
-
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i - 1);
-                day.innerText = `${date.getDate()}/${date.getMonth() + 1}`;
-
-                if (completedDays.includes(i)) {
-                    day.classList.add('completed'); // Si le jour est dans les jours complétés, l'afficher comme complété
-                }
-
-                day.onclick = () => markDay(i, userId, completedDays);
-
-                tracker.appendChild(day);
+        for (let i = 1; i <= 365; i++) {
+            const day = document.createElement("div");
+            day.className = "day";
+            day.id = `day-${i}`;
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i - 1);
+            day.innerText = `${date.getDate()}/${date.getMonth() + 1}`;
+            if (completedDays.includes(i)) {
+                day.classList.add('completed');
             }
-        };
+            day.onclick = () => markDay(i, userId, completedDays);
+            tracker.appendChild(day);
+        }
+    };
 
-        window.onload = async () => {
-            const userId = await signIn(); // Authentifie l'utilisateur
-            initializeTracker(userId);  // Initialise le tracker avec les jours complétés
-        };
+    window.onload = async () => {
+        const userId = await signIn();
+        initializeTracker(userId);
+    };
 
 </script>
 
