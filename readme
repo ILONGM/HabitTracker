@@ -1,0 +1,16 @@
+HabitTracker Documentation
+
+1. Introduction
+
+HabitTracker is a simple web application designed to track daily push-up progress. Users can log whether they have completed their push-ups each day. Editing is only allowed for the current day, and once the day has passed, modifications are no longer possible.
+
+2. Project Structure
+	•	index.html – Contains the main structure and layout of the application.
+	•	style.css – Defines the visual appearance and styling of the application.
+	•	CNAME – Used for configuring a custom domain name.
+	•	.idea/ – Stores configuration files for the integrated development environment (IDE).
+
+3. Key Features
+	•	Daily Tracking – Users can mark their push-ups as completed for the current day.
+	•	Restricted Editing – Only the current day’s entry can be modified; past entries are locked.
+	•	Data Persistence – User records are stored in a database to ensure data retention across sessions.
